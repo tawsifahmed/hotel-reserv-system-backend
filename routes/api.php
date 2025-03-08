@@ -29,3 +29,10 @@ Route::prefix('/rooms')->group(function () {
     Route::put('/{id}', [RoomController::class, 'update']);
     Route::delete('/{id}', [RoomController::class, 'destroy']);
 });
+
+Route::prefix('reservations')->group(function () {
+    Route::get('/', [ReservationController::class, 'index']);
+    Route::post('/', [ReservationController::class, 'store']);
+    Route::put('/{id}', [ReservationController::class, 'update']);
+    Route::delete('/{id}', [ReservationController::class, 'destroy']);
+});
