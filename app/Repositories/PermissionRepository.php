@@ -1,8 +1,9 @@
 <?php
 namespace App\Repositories;
 
-
 use Spatie\Permission\Models\Permission;
+
+
 
 class PermissionRepository
     // space that we can use the repository implements RepositoryInterface

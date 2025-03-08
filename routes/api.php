@@ -1,7 +1,9 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\FloorController;
+use App\Http\Controllers\API\HomePageController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -13,7 +15,10 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// API Routes for Floor Management
+Route::prefix('/floors')->group(function () {
+    Route::get('/', [FloorController::class, 'index']);
+    Route::post('/', [FloorController::class, 'store']);
+    Route::put('/{id}', [FloorController::class, 'update']);
+    Route::delete('/{id}', [FloorController::class, 'destroy']);
 });

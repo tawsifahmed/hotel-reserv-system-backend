@@ -5,10 +5,6 @@ namespace App\Service;
 
 use DataTables;
 use App\Repositories\UserRepository;
-use App\Models\Unit;
-use App\Models\SubUnit;
-use App\Models\Area;
-use App\Models\Zone;
 use Illuminate\Support\Facades\Auth;
 
 class UserService
@@ -31,41 +27,36 @@ class UserService
     }
     public function getAllData()
     {
-
         $data = $this->userRepository->all();
-
         $data = $data->where('email', '!=', 'platform.singularity@gmail.com');
         return Datatables::of($data)
             ->addColumn('action', function ($row) {
-                $html = '';
-                $html .=  '<ul class="orderDatatable_actions mb-0 d-flex justify-content-start flex-wrap">';
-                 if(Auth::user()->hasPermissionTo('update_user')){
-                     $html .= '<li>
-                        <a href="' . route('administrative.user.edit', $row->id) . '" class="edit">
-                            <i class="uil uil-edit"></i>
-                        </a>
-                    </li>';
-                 }
-                if(Auth::user()->hasPermissionTo('delete_user')){
-                    $html .= '<li>
-                        <a href="#" onclick="deleteData(' . $row->id . ');" class="edit">
-                              <i class="fas fa-trash-alt"></i>
-                        </a>
-                    </li>';
-                }
-                $html .= '</ul>';
+                        $html = '';
+                        if(Auth::user()->can('role_delete')){
+                        $html .= '<a class="mr-3" href="' . route('administrative.user.edit', $row->id) . '" >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                                </a>';
+                        }
+                        if(Auth::user()->can('role_delete')){
+                            $html .= '<a class="text-danger" href="#" onclick="deleteData('.$row->id.');">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-delete"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path><line x1="18" y1="9" x2="12" y2="15"></line><line x1="12" y1="9" x2="18" y2="15"></line></svg>
+                                    </a>';
+                        }
+                        return $html;
+            })
+            ->addColumn('role', function ($data) {
+                $html = '<span class="badge bg-primary">' . optional($data->roles->first())->name . '</span> ';
                 return $html;
             })
-            ->editColumn('role', function ($row) {
-                $roles = $row->getRoleNames()?$row->getRoleNames()[0]:'';
-                return  $roles;
+            ->editColumn('status', function ($data) {
+                if ($data->status == 1) {
+                    $html =  '<span class="badge bg-success">Active</span>';
+                } else{
+                    $html =  '<span class="badge bg-warning">Inactive</span>';
+                }
+                return $html;
             })
-            ->editColumn('status', function ($row) {
-                $status = $row->status;
-                $badgeClass = $status == "active" ? "badge-success" : "badge-danger";
-                return  '<span class="text-capitalize badge ' . $badgeClass . '">' . $status . '</span> ';
-            })
-            ->rawColumns(['action','status','role'])
+            ->rawColumns(['action', 'role', 'status'])
             ->blacklist(['created_at', 'updated_at', 'action'])
             ->addIndexColumn()
             ->toJson();

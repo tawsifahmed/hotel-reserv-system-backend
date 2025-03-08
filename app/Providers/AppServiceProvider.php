@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Collection;
+
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -22,5 +25,6 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->environment('production')) {
             \URL::forceScheme('https');
         }
+        Paginator::useBootstrap();
     }
 }

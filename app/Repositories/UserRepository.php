@@ -1,7 +1,5 @@
 <?php
 namespace App\Repositories;
-
-
 use App\Models\User;
 
 class UserRepository
@@ -122,7 +120,6 @@ class UserRepository
          * ***************************************/
 
         if(!empty($relationFilter)){
-
             foreach ($relationFilter as $relation => $items){
                 $query =  $query->whereHas($relation, function($q) use ($items)
                 {
