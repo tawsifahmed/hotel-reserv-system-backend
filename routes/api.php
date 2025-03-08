@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\RoomController;
 use App\Http\Controllers\API\FloorController;
-use App\Http\Controllers\API\HomePageController;
 
 
 /*
@@ -21,4 +21,11 @@ Route::prefix('/floors')->group(function () {
     Route::post('/', [FloorController::class, 'store']);
     Route::put('/{id}', [FloorController::class, 'update']);
     Route::delete('/{id}', [FloorController::class, 'destroy']);
+});
+
+Route::prefix('/rooms')->group(function () {
+    Route::get('/', [RoomController::class, 'index']);
+    Route::post('/', [RoomController::class, 'store']);
+    Route::put('/{id}', [RoomController::class, 'update']);
+    Route::delete('/{id}', [RoomController::class, 'destroy']);
 });
