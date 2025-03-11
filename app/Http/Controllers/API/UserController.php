@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use Log;
 use App\Models\User;
+use App\Models\Reservation;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
@@ -12,6 +13,14 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+
+    public function reservation()
+    {
+        $query = Reservation::with('room', 'user')->where('user_id', Auth::user()->id);
+        $reservations = $query->get()->append('floor'); 
+
+        return response()->json($reservations);
+    }
 
     public function profile()
     {

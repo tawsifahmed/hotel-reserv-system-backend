@@ -11,7 +11,7 @@ class RoomController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Room::with('seats');
+        $query = Room::with('seats', 'floor');
 
         if ($request->has('floor_id')) {
             $query->where('floor_id', $request->floor_id);
@@ -28,7 +28,8 @@ class RoomController extends Controller
             'price_per_night' => 'required|numeric',
             'seats' => 'array',
             'seats.*.seat_number' => 'required|string',
-            'seats.*.status' => 'in:available,reserved'
+            'floor_id' => 'required',
+            // 'seats.*.status' => 'in:available,reserved'
         ]);
 
         $room = Room::create($request->only(['name', 'floor_id', 'price_per_night']));
@@ -52,7 +53,7 @@ class RoomController extends Controller
             'seats' => 'array',
             'seats.*.id' => 'sometimes|exists:seats,id',
             'seats.*.seat_number' => 'sometimes|required|string',
-            'seats.*.status' => 'sometimes|in:available,reserved'
+            // 'seats.*.status' => 'sometimes|in:available,reserved'
         ]);
 
         $room->update($request->only(['name', 'price_per_night']));

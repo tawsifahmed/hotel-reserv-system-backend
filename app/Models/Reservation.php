@@ -22,6 +22,12 @@ class Reservation extends Model
     {
         return $this->belongsTo(Room::class);
     }
+
+    public function getFloorAttribute()
+    {
+        return $this->room ? $this->room->floor : NULL;
+    }
+
     public function seat()
     {
         return $this->belongsTo(Seat::class);

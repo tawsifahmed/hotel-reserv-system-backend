@@ -15,4 +15,8 @@ class Room extends Model
     {
         return $this->hasMany(Seat::class);
     }
+    public function floor()
+    {
+        return $this->belongsTo(Floor::class, 'floor_id')->select('id', 'name');
+    }
 }

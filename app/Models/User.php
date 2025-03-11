@@ -4,7 +4,6 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Laravel\Sanctum\HasApiTokens;
-use App\Models\CustomNotification;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -80,16 +79,7 @@ class User extends Authenticatable
         }
     }
 
-    public function notifications()
-    {
-        return $this->hasMany(CustomNotification::class, 'user_id', 'id');
-    }
-
-    public function profile()
-    {
-        return $this->belongsTo(Profile::class, 'id', 'user_id');
-    }
-
+  
     public static function getTimeAgo($time)
     {
         $time_difference = time() - $time;

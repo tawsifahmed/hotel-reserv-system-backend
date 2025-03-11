@@ -11,7 +11,7 @@ class FloorController extends Controller
 {
     public function index()
     {
-        return response()->json(Floor::all());
+        return response()->json(Floor::select('id', 'name')->get());
     }
 
     public function store(Request $request)
