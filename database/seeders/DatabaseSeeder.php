@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
                     'name' => 'Developer',
                     'email' => 'platform.issb@gmail.com',
                     'phone' => '01710000000',
+                    'type' => 'admin',
                     'password' => Hash::make('12345678'),
                     'password_hint' => base64_encode('12345678')
                 ]
@@ -38,6 +39,7 @@ class DatabaseSeeder extends Seeder
                     );
                 }
             }
+
             $permissions = [
                 'user_list',
                 'user_create',

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\RoomController;
+use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\FloorController;
 use App\Http\Controllers\API\ReservationController;
 
@@ -17,8 +18,7 @@ use App\Http\Controllers\API\ReservationController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
-// authentication
+// API Routes for Floor Management
 Route::group(['prefix' => 'v1', 'as' => 'api', 'namespace' => 'Api'], function () {
     Route::post('login', [AuthController::class, 'login']);
     Route::post('register', [AuthController::class, 'register']);
@@ -31,10 +31,20 @@ Route::group(['prefix' => 'v1', 'as' => 'api', 'namespace' => 'Api'], function (
     Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('reset-password', [AuthController::class, 'resetPassword']);
         Route::post('logout', [AuthController::class, 'logout']);
+
+        //Users
+        Route::group(['prefix' => 'users'], function () {
+            Route::get('/list', [UserController::class, 'data']);
+            Route::get('/profile', [UserController::class, 'profile']);
+            Route::post('/create', [UserController::class, 'createUser']);
+            Route::post('/update/{id}', [UserController::class, 'update']);
+            Route::delete('/delete/{id}', [UserController::class, 'destroy']);
+            Route::get('/show/{id}', [UserController::class, 'show']);
+        });
     });
 });
 
-// floors
+
 Route::prefix('/floors')->group(function () {
     Route::get('/', [FloorController::class, 'index']);
     Route::post('/', [FloorController::class, 'store']);
@@ -42,7 +52,6 @@ Route::prefix('/floors')->group(function () {
     Route::delete('/{id}', [FloorController::class, 'destroy']);
 });
 
-// rooms
 Route::prefix('/rooms')->group(function () {
     Route::get('/', [RoomController::class, 'index']);
     Route::post('/', [RoomController::class, 'store']);
@@ -50,7 +59,6 @@ Route::prefix('/rooms')->group(function () {
     Route::delete('/{id}', [RoomController::class, 'destroy']);
 });
 
-// reservation 
 Route::prefix('reservations')->group(function () {
     Route::get('/', [ReservationController::class, 'index']);
     Route::post('/', [ReservationController::class, 'store']);

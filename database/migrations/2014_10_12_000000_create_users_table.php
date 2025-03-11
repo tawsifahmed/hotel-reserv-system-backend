@@ -19,8 +19,8 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
             $table->string('password_hint')->nullable();
-            $table->string('thumbnail')->nullable();
-            $table->string('nid')->nullable();
+            $table->string('image')->nullable();
+            $table->string('type')->nullable();
             $table->text('address')->nullable();
             $table->integer('status')->default(1)->comment('1=Active, 0=Inactive');
             $table->rememberToken();

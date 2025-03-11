@@ -27,8 +27,8 @@ class User extends Authenticatable
         'password',
         'password_hint',
         'status',
-        'thumbnail',
-        'nid',
+        'image',
+        'type',
         'address'
     ];
 
