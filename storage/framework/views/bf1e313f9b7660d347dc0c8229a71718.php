@@ -1,0 +1,1 @@
+<h1>Testing</h1><?php /**PATH D:\laragon\www\testing_by_fiz\riyad\hotel-reserv-sys-backend\resources\views/welcome.blade.php ENDPATH**/ ?>

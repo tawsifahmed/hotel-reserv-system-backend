@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('room_id')->constrained()->onDelete('cascade');
             $table->string('seat_number');
+
             $table->enum('status', ['available', 'reserved'])->default('available');
             $table->timestamps();
         });

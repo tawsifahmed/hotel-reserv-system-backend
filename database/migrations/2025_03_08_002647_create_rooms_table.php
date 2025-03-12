@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->foreignId('floor_id')->constrained()->onDelete('cascade');
+            $table->integer('seats');
             $table->decimal('price_per_night', 8, 2);
             $table->timestamps();
         });

@@ -17,7 +17,7 @@ class ReservationController extends Controller
         if ($request->has('room_id')) $query->where('room_id', $request->room_id);
         if ($request->has('start_date')) $query->where('start_date', '>=', $request->start_date);
         if ($request->has('end_date')) $query->where('end_date', '<=', $request->end_date);
-        $reservations = $query->get()->append('floor'); 
+        $reservations = $query->get()->append('floor');
 
         return response()->json($reservations);
     }
@@ -25,9 +25,7 @@ class ReservationController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            // 'user_id' => 'required|exists:users,id',
-            'room_id' => 'required|exists:rooms,id',
-            'seat_id' => 'required|exists:seats,id',
+            'room_id' => 'required',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
         ]);
@@ -40,10 +38,12 @@ class ReservationController extends Controller
     {
         $reservation = Reservation::findOrFail($id);
         $request->validate([
-            'seat_id' => 'sometimes|exists:seats,id',
+            'room_id' => 'required',
             'start_date' => 'sometimes|date',
             'end_date' => 'sometimes|date|after_or_equal:start_date',
         ]);
+        $request['user_id'] = Auth::user()->id;
+
         $reservation->update($request->all());
         return response()->json($reservation);
     }
