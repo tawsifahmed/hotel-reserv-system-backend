@@ -25,7 +25,11 @@ class FloorController extends Controller
         }
 
         $floor = Floor::create(['name' => $request->name]);
-        return response()->json($floor, 201);
+        $payload = [
+            'code' => 201,
+            'data' => $floor
+        ];
+        return response()->json($payload, 201);
     }
 
     public function update($id, Request $request)
