@@ -44,13 +44,21 @@ class FloorController extends Controller
 
         $floor = Floor::findOrFail($id);
         $floor->update(['name' => $request->name]);
-        return response()->json($floor);
+        $payload = [
+            'code' => 200,
+            'data' => $floor
+        ];
+        return response()->json($payload, 200);
     }
 
     public function destroy($id)
     {
         $floor = Floor::findOrFail($id);
+        $payload = [
+            'code' => 200,
+            'message' => 'Floor deleted successfully'
+        ];
         $floor->delete();
-        return response()->json(['message' => 'Floor deleted successfully']);
+        return response()->json($payload, 200);
     }
 }

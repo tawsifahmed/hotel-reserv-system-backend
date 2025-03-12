@@ -47,21 +47,21 @@ Route::group(['prefix' => 'v1', 'as' => 'api', 'namespace' => 'Api'], function (
             Route::get('/', [FloorController::class, 'index']);
             Route::post('/store', [FloorController::class, 'store']);
             Route::put('/update/{id}', [FloorController::class, 'update']);
-            Route::delete('/{id}', [FloorController::class, 'destroy']);
+            Route::delete('/delete/{id}', [FloorController::class, 'destroy']);
         });
 
         Route::prefix('/rooms')->group(function () {
             Route::get('/', [RoomController::class, 'index']);
             Route::post('/store', [RoomController::class, 'store']);
             Route::put('/update/{id}', [RoomController::class, 'update']);
-            Route::delete('/{id}', [RoomController::class, 'destroy']);
+            Route::delete('/delete/{id}', [RoomController::class, 'destroy']);
         });
 
         Route::prefix('/reservations')->group(function () {
             Route::get('/', [ReservationController::class, 'index']);
             Route::post('/store', [ReservationController::class, 'store']);
             Route::put('/update/{id}', [ReservationController::class, 'update']);
-            Route::delete('/{id}', [ReservationController::class, 'destroy']);
+            Route::delete('/delete/{id}', [ReservationController::class, 'destroy']);
         });
 
     });
