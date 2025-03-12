@@ -21,14 +21,16 @@ class AuthController extends Controller
                 'phone' => 'nullable|string',
                 'email' => 'required|email|unique:users,email',
                 'password' => 'required|string|min:6|confirmed',
+                'type' => 'nullable',
             ]);
             $user = User::create([
                 'name' => $request->name,
                 'phone' => $request->phone,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
+                'type' => $request->type
             ]);
-            
+
             if( $user ){
                 return response()->json([
                     'code' => 201,
@@ -40,7 +42,7 @@ class AuthController extends Controller
                     'message' => 'An error occurred while registering user',
                 ], 500);
             }
-            
+
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'code' => 422,
@@ -72,6 +74,7 @@ class AuthController extends Controller
                         'code' => 200,
                         'message' => 'Login successful',
                         'access_token' => $token,
+                        'type' => $user->type,
                         // 'user_type' => $user->roles->pluck('name')->first(),
                         // 'permissions' => $user->getAllPermissions()->pluck('name'),
 
