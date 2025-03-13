@@ -11,22 +11,40 @@ class RoomController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Room::with('floor');
-        $query->join('reservations','rooms.id','=','reservations.room_id');
-        if ($request->has('floor_id')) {
-            $query->where('floor_id', $request->floor_id);
-        }
-        if($request->start_date && $request->end_date){
-            $query->where(function ($query) use ($request) {
-                $query->where('reservations.end_date', '<=', $request->start_date)
-                      ->orWhereNull('reservations.end_date');
-            })
-            ->orWhere(function ($query) use ($request) {
-                $query->where('reservations.start_date', '>=', $request->end_date);
-            });
-        }
+        $query = Room::with('floor')
+    ->leftJoin('reservations', 'rooms.id', '=', 'reservations.room_id');
 
-        return response()->json($query->get());
+// Filter by floor_id if provided
+if ($request->has('floor_id')) {
+    $query->where('floor_id', $request->floor_id);
+}
+
+$today = now()->toDateString();
+
+// Filter by date range if provided
+if ($request->start_date && $request->end_date) {
+    // If date range is provided, check availability within the range
+    $query->where(function ($query) use ($request) {
+        $query->where('reservations.end_date', '<=', $request->start_date)
+              ->orWhereNull('reservations.end_date');
+    })
+    ->orWhere(function ($query) use ($request) {
+        $query->where('reservations.start_date', '>=', $request->end_date);
+    });
+} else {
+    // If no date range is provided, check availability based on today's date
+    $query->where(function ($query) use ($today) {
+        $query->where('reservations.end_date', '<', $today)
+              ->orWhereNull('reservations.end_date');
+    })
+    ->orWhere(function ($query) use ($today) {
+        $query->where('reservations.start_date', '>', $today);
+    });
+}
+
+return response()->json($query->get());
+
+
     }
 
     public function store(Request $request)

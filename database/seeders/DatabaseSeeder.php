@@ -20,8 +20,8 @@ class DatabaseSeeder extends Seeder
             $admin = User::updateOrCreate(
                 ['id' => '1',],
                 [
-                    'name' => 'Developer',
-                    'email' => 'platform.issb@gmail.com',
+                    'name' => 'Administrative',
+                    'email' => 'hrs_admin@gmail.com',
                     'phone' => '01710000000',
                     'type' => 'admin',
                     'password' => Hash::make('12345678'),
@@ -74,6 +74,6 @@ class DatabaseSeeder extends Seeder
             return $e->getMessage();
         }
 
-        
+
     }
 }
