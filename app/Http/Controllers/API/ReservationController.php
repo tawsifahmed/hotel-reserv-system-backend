@@ -62,8 +62,14 @@ class ReservationController extends Controller
                 'User ' . Auth::user()->name. ' has booked a room.'
             );
         }
+        $payload = [
+            'code' => 201,
+            'app_message' => 'Reservation created successfully.',
+            'user_message' => 'Reservation created successfully.',
+            'data' => $reservation
+        ];
 
-        return response()->json($reservation, 201);
+        return response()->json($payload, 201);
     }
 
     public function update(Request $request, $id)
@@ -99,8 +105,14 @@ class ReservationController extends Controller
                 );
             }
         }
+        $payload = [
+            'code' => 200,
+            'app_message' => 'Reservation updated successfully.',
+            'user_message' => 'Reservation updated successfully.',
+            'data' => $reservation
+        ];
 
-        return response()->json($reservation);
+        return response()->json($payload, 200);
     }
 
     public function destroy($id)
