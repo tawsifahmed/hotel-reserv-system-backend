@@ -62,6 +62,7 @@ Route::group(['prefix' => 'v1', 'as' => 'api', 'namespace' => 'Api'], function (
             Route::post('/store', [ReservationController::class, 'store']);
             Route::post('/update/{id}', [ReservationController::class, 'update']);
             Route::delete('/delete/{id}', [ReservationController::class, 'destroy']);
+            Route::get('/export-excel', [ReservationController::class, 'downloadExcelReport']);
         });
 
         Route::get('/notifications', [NotificationController::class, 'getNotifications']);

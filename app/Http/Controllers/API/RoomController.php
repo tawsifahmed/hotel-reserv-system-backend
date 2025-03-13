@@ -62,7 +62,6 @@ class RoomController extends Controller
         // }
 
 
-
         $payload = [
             'code' => 201,
             'data' => $room
@@ -101,6 +100,7 @@ class RoomController extends Controller
             'data' => $room
         ];
         return response()->json($payload, 200);
+
     }
 
     public function destroy($id)
