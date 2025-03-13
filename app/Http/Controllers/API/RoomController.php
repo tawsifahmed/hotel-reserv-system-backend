@@ -65,7 +65,14 @@ return response()->json($query->get());
         //     }
         // }
 
-        return response()->json($room, 201);
+        
+        $payload = [
+            'code' => 201,
+            'data' => $room
+        ];
+        return response()->json($payload, 201);
+
+        // return response()->json($room, 201);
     }
 
     public function update(Request $request, $id)
