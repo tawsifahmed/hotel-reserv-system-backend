@@ -32,7 +32,6 @@ Route::group(['prefix' => 'v1', 'as' => 'api', 'namespace' => 'Api'], function (
         Route::post('reset-password', [AuthController::class, 'resetPassword']);
         Route::post('logout', [AuthController::class, 'logout']);
 
-        //Users
         Route::group(['prefix' => 'users'], function () {
             Route::get('/list', [UserController::class, 'data']);
             Route::get('/profile', [UserController::class, 'profile']);
