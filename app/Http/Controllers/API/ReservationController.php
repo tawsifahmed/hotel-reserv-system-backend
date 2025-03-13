@@ -46,14 +46,14 @@ class ReservationController extends Controller
         ]);
         $request['user_id'] = Auth::user()->id;
         $reservation = Reservation::create($request->all());
-        
+
         //notification for client
         $this->createNotification(
             Auth::user()->id,
             $reservation->id,
             'You have booked a room. An admin will review soon.'
         );
-        //notification for admins 
+        //notification for admins
         $admins = User::where('type', 'admin')->get();
         foreach ($admins as $admin) {
             $this->createNotification(
@@ -88,8 +88,8 @@ class ReservationController extends Controller
                 $reservation->id,
                 'An admin has '.$request->status.' your reservation.'
             );
-            
-            //notification for admins 
+
+            //notification for admins
             $admins = User::where('type', 'admin')->get();
             foreach ($admins as $admin) {
                 $this->createNotification(
@@ -112,22 +112,23 @@ class ReservationController extends Controller
 
     public function downloadExcelReport(Request $request)
     {
-        $query = Reservation::with('room', 'user')->where('status', 'confirmed');
+        $query = Reservation::with('room', 'user');
         if ($request->has('user_id')) $query->where('user_id', $request->user_id);
         if ($request->has('room_id')) $query->where('room_id', $request->room_id);
+        if ($request->has('status')) $query->where('status', $request->status);
         if ($request->has('start_date')) $query->where('start_date', '>=', $request->start_date);
         if ($request->has('end_date')) $query->where('end_date', '<=', $request->end_date);
-        
+
         $reservations = $query->get()->append('floor');
 
         $reservations = $query->get()->map(function ($reservation) {
             return [
-                'user_name' => $reservation->user->name, 
+                'user_name' => $reservation->user->name,
                 'start_date' => $reservation->start_date,
                 'end_date' => $reservation->end_date,
                 'status' => $reservation->status,
                 'room_name' => $reservation->room->name,
-                'floor_name' => $reservation->room->floor->name, 
+                'floor_name' => $reservation->room->floor->name,
                 'price_per_night' => $reservation->room->price_per_night,
             ];
         });
