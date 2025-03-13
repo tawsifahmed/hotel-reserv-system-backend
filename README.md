@@ -17,7 +17,13 @@ To get started with the Hotel Reservation System, follow these steps:
     ```bash
     copy the env.example and make it env, add db_name there
     ```
-3. **Serve the Application**:
+
+4. **Create Storage Link**:
+    ```bash
+    php artisan storage:link
+    ```    
+
+5. **Serve the Application**:
     ```bash
     php artisan serve
     ```
