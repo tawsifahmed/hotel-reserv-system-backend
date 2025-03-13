@@ -14,14 +14,14 @@ class RoomController extends Controller
         $query = Room::with('floor')
             ->leftJoin('reservations', 'rooms.id', '=', 'reservations.room_id')
             ->select('rooms.*'); // Explicitly selecting room columns
-    
+
         // Filter by floor_id if provided
         if ($request->has('floor_id')) {
             $query->where('rooms.floor_id', $request->floor_id);
         }
-    
+
         $today = now()->toDateString();
-    
+
         // Filter by date range if provided
         if ($request->start_date && $request->end_date) {
             $query->where(function ($query) use ($request) {
@@ -40,10 +40,10 @@ class RoomController extends Controller
                 $query->where('reservations.start_date', '>', $today);
             });
         }
-    
+
         return response()->json($query->get());
     }
-    
+
     public function store(Request $request)
     {
         $validData = $request->validate([
@@ -61,7 +61,14 @@ class RoomController extends Controller
         //     }
         // }
 
-        return response()->json($room, 201);
+
+        $payload = [
+            'code' => 201,
+            'data' => $room
+        ];
+        return response()->json($payload, 201);
+
+        // return response()->json($room, 201);
     }
 
     public function update(Request $request, $id)
@@ -88,14 +95,21 @@ class RoomController extends Controller
         //     }
         // }
 
-        return response()->json($room);
+        $payload = [
+            'code' => 200,
+            'data' => $room
+        ];
+        return response()->json($payload, 200);
     }
 
     public function destroy($id)
     {
         $room = Room::findOrFail($id);
+        $payload = [
+            'code' => 200,
+            'message' => 'Room deleted successfully'
+        ];
         $room->delete();
-
-        return response()->json(['message' => 'Room deleted successfully']);
+        return response()->json($payload, 200);
     }
 }

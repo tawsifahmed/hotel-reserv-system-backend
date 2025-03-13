@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Models\User;
 use App\Models\Floor;
 use App\Models\Reservation;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -22,6 +24,17 @@ class ReservationController extends Controller
         return response()->json($reservations);
     }
 
+    public function createNotification($userId, $reservationId, $text)
+    {
+        Notification::create([
+            'user_id' => $userId,
+            'created_by' => $createdBy ?? Auth::id(),
+            'reservation_id' => $reservationId,
+            'text' => $text,
+            'is_read' => 0,
+        ]);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -31,6 +44,23 @@ class ReservationController extends Controller
         ]);
         $request['user_id'] = Auth::user()->id;
         $reservation = Reservation::create($request->all());
+        
+        //notification for client
+        $this->createNotification(
+            Auth::user()->id,
+            $reservation->id,
+            'You have booked a room. An admin will review soon.'
+        );
+        //notification for admins 
+        $admins = User::where('type', 'admin')->get();
+        foreach ($admins as $admin) {
+            $this->createNotification(
+                $admin->id,
+                $reservation->id,
+                'User ' . Auth::user()->name. ' has booked a room.'
+            );
+        }
+
         return response()->json($reservation, 201);
     }
 
@@ -38,13 +68,36 @@ class ReservationController extends Controller
     {
         $reservation = Reservation::findOrFail($id);
         $request->validate([
-            'room_id' => 'required',
-            'start_date' => 'sometimes|date',
-            'end_date' => 'sometimes|date|after_or_equal:start_date',
+            'status' => 'required',
         ]);
         $request['user_id'] = Auth::user()->id;
 
         $reservation->update($request->all());
+        if(Auth::user()->type == 'client'){
+            //notification for client
+            $this->createNotification(
+                Auth::user()->id,
+                $reservation->id,
+                'You have '.$request->status.' your reservation.'
+            );
+        }else{
+            $this->createNotification(
+                Auth::user()->id,
+                $reservation->id,
+                'An admin has '.$request->status.' your reservation.'
+            );
+            
+            //notification for admins 
+            $admins = User::where('type', 'admin')->get();
+            foreach ($admins as $admin) {
+                $this->createNotification(
+                    $admin->id,
+                    $reservation->id,
+                    'An admin has '.$request->status.' your reservation.'
+                );
+            }
+        }
+
         return response()->json($reservation);
     }
 

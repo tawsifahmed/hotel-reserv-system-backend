@@ -6,6 +6,7 @@ use App\Http\Controllers\API\RoomController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\FloorController;
 use App\Http\Controllers\API\ReservationController;
+use App\Http\Controllers\API\NotificationController;
 
 
 /*
@@ -62,6 +63,10 @@ Route::group(['prefix' => 'v1', 'as' => 'api', 'namespace' => 'Api'], function (
             Route::post('/update/{id}', [ReservationController::class, 'update']);
             Route::delete('/delete/{id}', [ReservationController::class, 'destroy']);
         });
+
+        Route::get('/notifications', [NotificationController::class, 'getNotifications']);
+        Route::post('/notifications/update/{id}', [NotificationController::class, 'update']);
+        Route::get('/notifications/read-all', [NotificationController::class, 'readAll']);
 
     });
 });
