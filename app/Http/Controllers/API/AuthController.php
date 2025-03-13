@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 
 class AuthController extends Controller
@@ -32,18 +33,17 @@ class AuthController extends Controller
                 'type' => $request->type
             ]);
 
-            if( $user ){
+            if ($user) {
                 return response()->json([
                     'code' => 201,
                     'message' => 'Registration success.',
                 ], 201);
-            }else{
+            } else {
                 return response()->json([
                     'code' => 500,
                     'message' => 'An error occurred while registering user',
                 ], 500);
             }
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'code' => 422,
@@ -114,6 +114,22 @@ class AuthController extends Controller
         }
     }
 
+    public function password_varification($message, $email)
+    {
+        try {
+            // Use Laravel's Mail facade to send the email
+            Mail::raw($message, function ($mail) use ($email) {
+                $mail->to($email)
+                    ->subject('OTP for Password Reset');
+            });
+
+            return true;
+        } catch (\Exception $e) {
+            \Log::error($e->getMessage());
+            return false;
+        }
+    }
+
     public function forgotPasswordOtp(Request $request)
     {
         try {
@@ -125,7 +141,7 @@ class AuthController extends Controller
                 $otp = UserOtp::where('user_id', $user->id)->orderBy('created_at', 'desc')->first();
                 if ($otp->otp == $request->otp) {
                     $token = $user->createToken('API Token')->plainTextToken;
-                     $user->tokens()->update(['expires_at' => now()->addHours(2)]);
+                    $user->tokens()->update(['expires_at' => now()->addHours(2)]);
 
                     return response()->json([
                         'code' => 200,
@@ -147,7 +163,6 @@ class AuthController extends Controller
                 'error' => $e->getMessage(),
             ], 500);
         }
-
     }
     public function forgotPassword(Request $request)
     {
@@ -158,7 +173,7 @@ class AuthController extends Controller
                 return response()->json(['message' => 'User not found'], 404);
             } else {
                 // $createPass = rand(1234, 9999);
-                $otpCode= 123456;
+                $otpCode = 123456;
 
                 UserOtp::create([
                     'user_id' => $user->id,
@@ -210,5 +225,4 @@ class AuthController extends Controller
             return response()->json(['message' => 'Failed to reset password', 'error' => $e->getMessage()], 500);
         }
     }
-
 }
