@@ -28,4 +28,10 @@ To get started with the Hotel Reservation System, follow these steps:
     php artisan serve
     ```
 
+6. **admin credentials**:
+```
+ 'email' => 'hrs_admin@gmail.com',
+ 'password' => 12345678 from database/seeders
+```    
+
 These steps will set up the project and start the development server.
