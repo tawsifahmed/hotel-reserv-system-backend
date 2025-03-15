@@ -41,7 +41,9 @@ class RoomController extends Controller
             });
         }
 
-        return response()->json($query->get());
+        $rooms = $query->get()->unique('id')->values();
+
+        return response()->json($rooms);
     }
 
     public function store(Request $request)
