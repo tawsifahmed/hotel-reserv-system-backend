@@ -78,21 +78,25 @@ class ReservationController extends Controller
         $request->validate([
             'status' => 'required',
         ]);
-        $request['user_id'] = Auth::user()->id;
+
+        if (Auth::user()->type != 'admin') {
+            $request['user_id'] = Auth::user()->id;
+        }
 
         $reservation->update($request->all());
-        if(Auth::user()->type == 'client'){
+        if (Auth::user()->type == 'client') {
             //notification for client
             $this->createNotification(
                 Auth::user()->id,
                 $reservation->id,
-                'You have '.$request->status.' your reservation.'
+                'You have ' . $request->status . ' your reservation.'
             );
-        }else{
+        } else {
+            //notification for client
             $this->createNotification(
-                Auth::user()->id,
+                $reservation->user_id,
                 $reservation->id,
-                'An admin has '.$request->status.' your reservation.'
+                'An admin has ' . $request->status . ' your reservation.'
             );
 
             //notification for admins
@@ -101,7 +105,7 @@ class ReservationController extends Controller
                 $this->createNotification(
                     $admin->id,
                     $reservation->id,
-                    'An admin has '.$request->status.' your reservation.'
+                    'An admin has ' . $request->status . ' the reservation of user ' . $reservation->user->name . '.'
                 );
             }
         }
