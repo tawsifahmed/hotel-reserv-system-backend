@@ -28,7 +28,7 @@ class ReservationController extends Controller
 
     public function show($id)
     {
-        $reservation = Reservation::find($id);
+        $reservation = Reservation::with('room', 'user')->find($id);
         // dd($reservation);
         if (!$reservation) {
             return response()->json([
