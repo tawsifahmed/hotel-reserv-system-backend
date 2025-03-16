@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\API;
 
+use Carbon\Carbon;
 use App\Models\Room;
 use App\Models\Seat;
+use App\Models\Reservation;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -11,39 +13,30 @@ class RoomController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Room::with('floor')
-            ->leftJoin('reservations', 'rooms.id', '=', 'reservations.room_id')
-            ->select('rooms.*'); // Explicitly selecting room columns
+        $startDate = isset($request->start_date) ? ($request->start_date . ' 00:00:00') : null;
+        $endDate = isset($request->end_date) ? ($request->end_date . ' 23:59:59') : null;
 
-        // Filter by floor_id if provided
+        $query = Room::with('floor')
+            ->select('rooms.*')
+            ->distinct(); // prevent duplicate room records
+
+        if ($startDate && $endDate) {
+            // reserved same rooms in different dates
+            $reservedRooms = Reservation::where(function ($query) use ($startDate, $endDate) {
+                $query->where('start_date', '<', $endDate)
+                    ->where('end_date', '>', $startDate);
+            })->pluck('room_id');
+
+            //exclude reserved rooms from the results
+            if (!$reservedRooms->isEmpty()) {
+                $query->whereNotIn('rooms.id', $reservedRooms);
+            }
+        }
+
         if ($request->has('floor_id')) {
             $query->where('rooms.floor_id', $request->floor_id);
         }
-
-        $today = now()->toDateString();
-
-        // Filter by date range if provided
-        if ($request->start_date && $request->end_date) {
-            $query->where(function ($query) use ($request) {
-                $query->where('reservations.end_date', '<=', $request->start_date)
-                      ->orWhereNull('reservations.end_date');
-            })
-            ->orWhere(function ($query) use ($request) {
-                $query->where('reservations.start_date', '>=', $request->end_date);
-            });
-        } else {
-            $query->where(function ($query) use ($today) {
-                $query->where('reservations.end_date', '<', $today)
-                      ->orWhereNull('reservations.end_date');
-            })
-            ->orWhere(function ($query) use ($today) {
-                $query->where('reservations.start_date', '>', $today);
-            });
-        }
-
-        $rooms = $query->get()->unique('id')->values();
-
-        return response()->json($rooms);
+        return response()->json($query->get());
     }
 
     public function store(Request $request)
@@ -56,7 +49,7 @@ class RoomController extends Controller
             // 'seats.*.status' => 'in:available,reserved'
         ]);
 
-        $room = Room::create( $validData );
+        $room = Room::create($validData);
         // if (!empty($request->seats)) {
         //     foreach ($request->seats as $seat) {
         //         $room->seats()->create($seat);
@@ -84,7 +77,7 @@ class RoomController extends Controller
             'floor_id' => 'required|integer',
             'seats' => 'required|integer',
         ]);
-        $room->update($request->only(['name', 'price_per_night','floor_id','seats']));
+        $room->update($request->only(['name', 'price_per_night', 'floor_id', 'seats']));
 
         // if (!empty($request->seats)) {
         //     foreach ($request->seats as $seatData) {
@@ -102,7 +95,6 @@ class RoomController extends Controller
             'data' => $room
         ];
         return response()->json($payload, 200);
-
     }
 
     public function destroy($id)

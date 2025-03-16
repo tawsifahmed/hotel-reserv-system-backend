@@ -26,6 +26,26 @@ class ReservationController extends Controller
         return response()->json($reservations);
     }
 
+    public function show($id)
+    {
+        $reservation = Reservation::find($id);
+        // dd($reservation);
+        if (!$reservation) {
+            return response()->json([
+                'code' => 404,
+                'app_message' => 'Reservation not found.',
+                'user_message' => 'Reservation does not exist.',
+            ], 404);
+        }
+
+        return response()->json([
+            'code' => 200,
+            'app_message' => 'Reservation found successfully.',
+            'user_message' => 'Reservation details retrieved successfully.',
+            'data' => $reservation,
+        ], 200);
+    }
+
     public function createNotification($userId, $reservationId, $text)
     {
         Notification::create([
@@ -44,9 +64,11 @@ class ReservationController extends Controller
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'total_price' => 'required',
+            'is_paid' => 'nullable',
         ]);
         $request['user_id'] = Auth::user()->id;
         $reservation = Reservation::create($request->all());
+        // dd($reservation);
 
         //notification for client
         $this->createNotification(
@@ -54,6 +76,7 @@ class ReservationController extends Controller
             $reservation->id,
             'You have booked a room. An admin will review soon.'
         );
+
         //notification for admins
         $admins = User::where('type', 'admin')->get();
         foreach ($admins as $admin) {
@@ -78,11 +101,13 @@ class ReservationController extends Controller
         $reservation = Reservation::findOrFail($id);
         $request->validate([
             'status' => 'required',
+            'is_paid' => 'nullable',
+            'room_id' => 'exists:rooms,id'
         ]);
 
-        if (Auth::user()->type != 'admin') {
-            $request['user_id'] = Auth::user()->id;
-        }
+        // if (Auth::user()->type != 'admin') {
+        //     $request['user_id'] = Auth::user()->id;
+        // }
 
         $reservation->update($request->all());
         if (Auth::user()->type == 'client') {
@@ -92,6 +117,15 @@ class ReservationController extends Controller
                 $reservation->id,
                 'You have ' . $request->status . ' your reservation.'
             );
+
+            if($request->is_paid == 1){
+                $this->createNotification(
+                    Auth::user()->id,
+                    $reservation->id,
+                    'You have paid for your reservation.'
+                );
+            }
+
         } else {
             //notification for client
             $this->createNotification(
@@ -99,6 +133,14 @@ class ReservationController extends Controller
                 $reservation->id,
                 'An admin has ' . $request->status . ' your reservation.'
             );
+
+            if($request->is_paid == 1){
+                $this->createNotification(
+                    Auth::user()->id,
+                    $reservation->id,
+                    'User ' . $reservation->user->name . ' has paid for a reservation.'
+                );
+            }
 
             //notification for admins
             $admins = User::where('type', 'admin')->get();

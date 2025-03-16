@@ -7,7 +7,7 @@ use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\FloorController;
 use App\Http\Controllers\API\ReservationController;
 use App\Http\Controllers\API\NotificationController;
-
+use App\Models\Reservation;
 
 /*
 |--------------------------------------------------------------------------
@@ -59,6 +59,7 @@ Route::group(['prefix' => 'v1', 'as' => 'api', 'namespace' => 'Api'], function (
 
         Route::prefix('/reservations')->group(function () {
             Route::get('/', [ReservationController::class, 'index']);
+            Route::get('/show/{id}', [ReservationController::class, 'show'] );
             Route::post('/store', [ReservationController::class, 'store']);
             Route::post('/update/{id}', [ReservationController::class, 'update']);
             Route::delete('/delete/{id}', [ReservationController::class, 'destroy']);
