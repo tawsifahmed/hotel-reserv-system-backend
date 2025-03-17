@@ -23,13 +23,14 @@ class RoomController extends Controller
         if ($startDate && $endDate) {
             // reserved same rooms in different dates
             $reservedRooms = Reservation::where(function ($query) use ($startDate, $endDate) {
-                $query->where('start_date', '<', $endDate)
-                    ->where('end_date', '>', $startDate);
-            })->pluck('room_id');
+                    $query->where('start_date', '<=', $endDate)
+                        ->where('end_date', '>=', $startDate);
+                })->pluck('room_id');
 
             //exclude reserved rooms from the results
             if (!$reservedRooms->isEmpty()) {
                 $query->whereNotIn('rooms.id', $reservedRooms);
+                // dd($query->get());
             }
         }
 
