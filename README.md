@@ -8,14 +8,22 @@ To get started with the Hotel Reservation System, follow these steps:
     ```bash
     composer install
     ```
+2. **Environment File Creation**:
+    ```bash
+    copy the env.example and make it .env
+    ```
 
-2. **Generate Application Key**:
+3. **Generate Application Key**:
     ```bash
     php artisan key:generate
     ```
-3. **db config in env**:
+4. **Migrations**:
     ```bash
-    copy the env.example and make it env, add db_name there
+    php artisan migrate --seed
+    ```   
+    or if you want to refresh existing tables
+    ```bash
+    php artisan migrate:fresh --seed
     ```
 
 4. **Create Storage Link**:
@@ -25,7 +33,7 @@ To get started with the Hotel Reservation System, follow these steps:
 
 5. **Serve the Application**:
     ```bash
-    php artisan serve
+    php artisan serve 
     ```
 
 6. **admin credentials**:
