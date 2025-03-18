@@ -25,6 +25,10 @@ To get started with the Hotel Reservation System, follow these steps:
     ```bash
     php artisan migrate:fresh --seed
     ```
+    or if you want to import a db,
+    ```bash
+    import in phpmyadmin, config in .env and no need to run migration
+    ```
 
 4. **Create Storage Link**:
     ```bash

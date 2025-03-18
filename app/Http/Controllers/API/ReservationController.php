@@ -174,11 +174,10 @@ class ReservationController extends Controller
         $query = Reservation::with('room', 'user');
         if ($request->has('user_id')) $query->where('user_id', $request->user_id);
         if ($request->has('room_id')) $query->where('room_id', $request->room_id);
+        if ($request->has('total_price')) $query->where('total_price', $request->total_price);
         if ($request->has('status')) $query->where('status', $request->status);
         if ($request->has('start_date')) $query->where('start_date', '>=', $request->start_date);
         if ($request->has('end_date')) $query->where('end_date', '<=', $request->end_date);
-
-        $reservations = $query->get()->append('floor');
 
         $reservations = $query->get()->map(function ($reservation) {
             return [
@@ -189,9 +188,11 @@ class ReservationController extends Controller
                 'room_name' => $reservation->room->name,
                 'floor_name' => $reservation->room->floor->name,
                 'price_per_night' => $reservation->room->price_per_night,
+                'total_price' => $reservation->total_price,
             ];
         });
 
+        // dd($reservations);
         $date_str = date('Y_m_d_H_i_s');
 
         $excelRelativePath = "public/excels/reports/" . $date_str . "_reservaton.xls";
@@ -211,4 +212,5 @@ class ReservationController extends Controller
 
         return response()->json($payload, 200);
     }
+
 }

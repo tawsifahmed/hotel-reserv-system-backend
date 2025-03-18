@@ -2,27 +2,38 @@
 
 namespace App\Exports;
 
-use Illuminate\Support\Collection;
-use Maatwebsite\Excel\Concerns\Exportable;
-use Illuminate\Contracts\View\View;
-use Maatwebsite\Excel\Concerns\FromView;
+use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class ReservationsExport implements FromView
+
+class ReservationsExport implements FromCollection, WithHeadings
 {
-    use Exportable;
+    protected $reservations;
 
-    protected $data;
-
-    public function __construct(Collection $data)
+    public function __construct($reservations)
     {
-        $this->data = $data;
+        $this->reservations = $reservations;
     }
 
-    public function view(): View
+    public function collection()
     {
-        $data = $this->data;
+        // dd($this->reservations)
+        return collect($this->reservations);
+    }
 
-        return view('export.reservation-report', compact('data'));
+    public function headings(): array
+    {
+        return [
+            'User Name',
+            'Start Date',
+            'End Date',
+            'Status',
+            'Room Name',
+            'Floor Name',
+            'Price Per Night',
+            'Total Price',
+        ];
     }
 }
+
 
